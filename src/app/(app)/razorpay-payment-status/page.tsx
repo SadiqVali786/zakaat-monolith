@@ -11,7 +11,7 @@ function PaymentStatusContent() {
 
   useEffect(() => {
     const status = searchParams.get("razorpay_payment_link_status");
-    const referenceId = searchParams.get("razorpay_payment_link_reference_id");
+    // const referenceId = searchParams.get("razorpay_payment_link_reference_id");
 
     if (status === "paid") {
       toast.success("Payment successful!");
@@ -78,7 +78,9 @@ function PaymentStatusContent() {
               : "We encountered an issue processing your payment. Please try again."}
           </p>
 
-          <p className="mb-4 text-sm text-[#474553]">Redirecting back to donations page...</p>
+          <p className="mb-4 text-sm text-[#474553]">
+            Redirecting back to donations page...
+          </p>
 
           <button
             onClick={() => router.push(APP_PATHS.DONOR_DASHBOARD_MESSAGES)}

@@ -1,11 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { z } from "zod";
 
-import {
-  createTRPCRouter,
-  protectedProcedure,
-  publicProcedure,
-} from "@/server/api/trpc";
+import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 import { ApplicationStatus, UserRole } from "@prisma/client";
 import type { ApplicationWithAuthorAndVerifier } from "@/types/fetch-application-action.type";
 import { APPLICATIONS_PER_PAGE } from "@/config/server-actions.config";
@@ -20,7 +16,7 @@ export const applicationRouter = createTRPCRouter({
         cursor: z.number().optional(),
       }),
     )
-    .query(async ({ ctx, input, signal }) => {
+    .query(async ({ ctx, input }) => {
       const {
         cursor,
         limit = APPLICATIONS_PER_PAGE,
@@ -124,7 +120,7 @@ export const applicationRouter = createTRPCRouter({
         reason: z.string(),
       }),
     )
-    .mutation(async ({ ctx, input, signal }) => {
+    .mutation(async ({ ctx, input }) => {
       await ctx.db.$transaction(async (tx) => {
         const author = await tx.user.update({
           where: { email: input.email },
@@ -139,7 +135,7 @@ export const applicationRouter = createTRPCRouter({
           },
         });
         if (!author) throw new Error("Author not found");
-        const application = await tx.application.create({
+        await tx.application.create({
           data: {
             authorId: author.id,
             amount: input.amount,
@@ -154,7 +150,7 @@ export const applicationRouter = createTRPCRouter({
 
   bookmark: protectedProcedure
     .input(z.object({ applicationId: z.string() }))
-    .mutation(async ({ ctx, input: { applicationId }, signal }) => {
+    .mutation(async ({ ctx, input: { applicationId } }) => {
       await ctx.db.application.update({
         where: { id: applicationId },
         data: {
@@ -166,7 +162,7 @@ export const applicationRouter = createTRPCRouter({
 
   unbookmark: protectedProcedure
     .input(z.object({ applicationId: z.string() }))
-    .mutation(async ({ ctx, input: { applicationId }, signal }) => {
+    .mutation(async ({ ctx, input: { applicationId } }) => {
       await ctx.db.application.update({
         where: { id: applicationId },
         data: {

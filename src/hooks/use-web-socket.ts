@@ -24,12 +24,12 @@ export const useWebSocket = () => {
   });
   const sendMessageRecievedMutation =
     api.message.sendMessageRecieved.useMutation({
-      onSuccess: async (updatedMessage) => {
+      onSuccess: async () => {
         utils.message.getRooms.invalidate();
       },
     });
   const sendMessageSeenMutation = api.message.sendMessageSeen.useMutation({
-    onSuccess: async (hi) => {
+    onSuccess: async () => {
       utils.message.getRooms.invalidate();
     },
   });

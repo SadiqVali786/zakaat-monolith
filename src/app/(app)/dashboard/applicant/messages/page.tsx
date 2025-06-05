@@ -1,5 +1,4 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-/* eslint-disable @typescript-eslint/no-floating-promises */
 "use client";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -7,12 +6,13 @@ import { Check } from "lucide-react";
 import Link from "next/link";
 import { BiCheckDouble } from "react-icons/bi";
 import { useSession } from "next-auth/react";
-import { useEffect } from "react";
-import { DifferentMessageStatus, UserRole } from "@/lib/types";
+import { DifferentMessageStatus } from "@/lib/types";
 import { formatRelativeDate } from "@/lib/utils";
 import { useRouter } from "next/navigation";
 import { APP_PATHS } from "@/config/path.config";
 import { api } from "@/trpc/react";
+import { UserRole } from "@prisma/client";
+import { useEffect } from "react";
 
 const DonorMessagesPage = () => {
   const router = useRouter();
@@ -20,14 +20,12 @@ const DonorMessagesPage = () => {
   const { data: session, status } = useSession();
 
   useEffect(() => {
-    if (status === "authenticated" && session?.user.role !== UserRole.Donor) {
-      if (session?.user.role === UserRole.Applicant) {
+    if (status === "authenticated" && session?.user.role !== UserRole.DONOR) {
+      if (session?.user.role === UserRole.APPLICANT)
         router.push(APP_PATHS.APPLICANT_DASHBOARD_MESSAGES);
-      } else if (session?.user.role === UserRole.Verifier) {
+      else if (session?.user.role === UserRole.VERIFIER)
         router.push(APP_PATHS.VERIFIER_DASHBOARD_SEARCH_APPLICANT);
-      } else {
-        router.push(APP_PATHS.HOME);
-      }
+      else router.push(APP_PATHS.HOME);
     }
   }, [status]);
 

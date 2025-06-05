@@ -3,11 +3,9 @@
 
 import { DropdownMenuItem } from "@/components/ui/dropdown-menu";
 import { useSession } from "next-auth/react";
-import { useChatStore } from "@/store/chat-store";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { APP_PATHS } from "@/config/path.config";
-import { DifferentRoomMessages } from "@/lib/types";
-import { useCallback, useState } from "react";
+import { useCallback } from "react";
 import { toast } from "sonner";
 import axios from "axios";
 import { api } from "@/trpc/react";
@@ -18,8 +16,6 @@ import { useDonorLocationStore } from "@/store/location-store";
 type Props = {
   isItBookmark: boolean;
   applicantId: string;
-  applicantName: string;
-  applicantImage: string;
   amount: number;
   upiId: string;
   applicationId: string;
@@ -36,14 +32,11 @@ type PaymentLinkResponse = {
 export const CustomDropdownMenuItems = ({
   isItBookmark,
   applicantId,
-  applicantName,
-  applicantImage,
   amount,
   upiId,
   applicationId,
 }: Props) => {
   const router = useRouter();
-  const [loading, setLoading] = useState(false);
   const store = useDonorLocationStore();
 
   const unbookmarkMutation = api.application.unbookmark.useMutation({
@@ -75,7 +68,6 @@ export const CustomDropdownMenuItems = ({
   const handlePayment = useCallback(async () => {
     try {
       if (status !== "authenticated") return;
-      setLoading(true);
       toast.loading("Creating payment link...");
 
       const response = (
@@ -98,8 +90,6 @@ export const CustomDropdownMenuItems = ({
     } catch (error) {
       toast.dismiss();
       toast.error((error as Error)?.message || "Payment link creation failed");
-    } finally {
-      setLoading(false);
     }
   }, [applicantId, amount, upiId, status]);
 

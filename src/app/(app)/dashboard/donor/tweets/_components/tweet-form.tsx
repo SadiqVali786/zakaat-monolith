@@ -29,12 +29,10 @@ export default function TweetForm() {
     try {
       api.tweet.create
         .useMutation({
-          onSuccess: async (tweet) => {
-            await api
-              .useUtils()
-              .tweet.infiniteTweetsScrollFeed.invalidate({
-                onlyFollowing: false,
-              });
+          onSuccess: async () => {
+            await api.useUtils().tweet.infiniteTweetsScrollFeed.invalidate({
+              onlyFollowing: false,
+            });
           },
         })
         .mutate({ text: data.tweet });

@@ -4,7 +4,6 @@
 import { applySchema } from "../_schema/validation";
 import { useForm, type SubmitHandler } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import type { z } from "zod";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -36,12 +35,6 @@ type FormValues = {
   rank: string;
 };
 
-type ApiValues = {
-  reason: string;
-  amount: number;
-  rank: number;
-};
-
 export default function ReasonPage() {
   const router = useRouter();
 
@@ -64,7 +57,6 @@ export default function ReasonPage() {
   const encodedFace = useApplyZakaatApplicationStore(
     (state) => state.encodedFace,
   );
-  const reset = useApplyZakaatApplicationStore((state) => state.reset);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(applyReasonSchema) as any,

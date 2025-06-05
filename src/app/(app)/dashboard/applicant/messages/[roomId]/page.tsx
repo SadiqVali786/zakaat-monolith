@@ -1,36 +1,34 @@
-/* eslint-disable @typescript-eslint/no-floating-promises */
 /* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable @typescript-eslint/no-floating-promises */
 "use client";
 
+import { api } from "@/trpc/react";
 import { MessageBar } from "./_components/message-bar";
 import { MessageContainer } from "./_components/message-container";
 import { useChatStore } from "@/store/chat-store";
 import { useEffect } from "react";
-import { getMessagesOfRoom } from "@/actions/message.actions";
-import { api } from "@/trpc/react";
+import { DifferentTypesOfWebSocketEvent } from "@/types/ws-messages-events.type";
+import { useSession } from "next-auth/react";
 
 export default function DonorMessagesRoomPage() {
   const store = useChatStore();
-  const messages = api
-    .useUtils()
-    .message.getMessagesOfRoom.getData({ roomId: store.currentRoomId! })
-    ?.find((room) => room.roomId === store.currentRoomId)?.messages;
+  const { data: session } = useSession();
+  const messages = api.message.getRooms
+    .useQuery()
+    .data?.find((room) => room.roomId === store.currentRoomId)?.messages;
+  const sendMessageSeenMutation = api.message.sendMessageSeen.useMutation();
 
   useEffect(() => {
     const initializeMessages = async () => {
-      if (!store.currentRoomId) return;
-      // const messages = await getMessagesOfRoom(store.currentRoomId);
-      const messages = api.message.getMessagesOfRoom.useQuery({
-        roomId: store.currentRoomId,
+      if (!store.currentRoomId || !session?.user.id) return;
+      sendMessageSeenMutation.mutate({
+        channel: store.currentRoomId,
+        event: DifferentTypesOfWebSocketEvent.Seen,
+        payload: { roomId: store.currentRoomId, userId: session?.user.id },
       });
-      store.resetUnreadMessages();
     };
     initializeMessages();
-  }, [store.currentRoomId]);
-
-  useEffect(() => {
-    store.sendMessageSeenStatus();
-  }, []);
+  }, [store.currentRoomId, session?.user.id]);
 
   // render date in between the messages if the date is different from the previous message
   const newMessages = messages?.map((message, index) => {

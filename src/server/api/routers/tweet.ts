@@ -5,7 +5,7 @@ import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 export const tweetRouter = createTRPCRouter({
   create: protectedProcedure
     .input(z.object({ text: z.string() }))
-    .mutation(async ({ ctx, input: { text }, signal }) => {
+    .mutation(async ({ ctx, input: { text } }) => {
       const tweet = await ctx.db.tweet.create({
         data: { text, authorId: ctx.session.user.id },
       });
@@ -20,7 +20,7 @@ export const tweetRouter = createTRPCRouter({
         cursor: z.object({ id: z.string(), createdAt: z.date() }).optional(),
       }),
     )
-    .query(async ({ ctx, input, signal }) => {
+    .query(async ({ ctx, input }) => {
       const { cursor, limit = 10, onlyFollowing } = input;
 
       const tweets = await ctx.db.tweet.findMany({

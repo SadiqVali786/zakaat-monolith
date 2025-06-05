@@ -1,14 +1,24 @@
 "use client";
+
 import { PlaceholdersAndVanishInput } from "@/components/aceternityui/placeholders-and-vanish-input";
-import { useChatStore } from "@/store/chat-store";
 import { useRef, useCallback } from "react";
 import { useSession } from "next-auth/react";
+import { api } from "@/trpc/react";
+import { useChatStore } from "@/store/chat-store";
+import { DifferentTypesOfWebSocketEvent } from "@/types/ws-messages-events.type";
 
 export function MessageBar() {
   const { data: session } = useSession();
-  const { sendMessage } = useChatStore();
-
+  const { currentRoomId } = useChatStore();
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const utils = api.useUtils();
+  const sendMessageMutation = api.message.sendChatMessage.useMutation({
+    onSuccess: async () => {
+      await utils.message.getRooms.invalidate();
+    },
+  });
+
   const scrollToBottom = useCallback(() => {
     setTimeout(() => {
       messagesEndRef.current?.scrollIntoView({
@@ -25,9 +35,13 @@ export function MessageBar() {
       e.preventDefault();
       const content = e.currentTarget.querySelector("input")?.value; // Get the value of the input
       if (!content || content.trim() === "" || !session?.user.id) return;
-      sendMessage(content, session?.user.id);
+      sendMessageMutation.mutate({
+        channel: currentRoomId!,
+        event: DifferentTypesOfWebSocketEvent.Chating,
+        payload: { roomId: currentRoomId!, content: content.trim() },
+      });
     },
-    [sendMessage, session?.user.id],
+    [session?.user.id, currentRoomId, sendMessageMutation],
   );
 
   return (

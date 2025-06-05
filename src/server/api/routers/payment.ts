@@ -15,7 +15,7 @@ export const paymentRouter = createTRPCRouter({
         donorId: z.string(),
       }),
     )
-    .mutation(async ({ input, ctx, signal }) => {
+    .mutation(async ({ input, ctx }) => {
       const { amount, upiId, applicantId, donorId } = input;
       const reference = `${Date.now()}_${donorId}`;
 

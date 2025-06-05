@@ -1,17 +1,13 @@
 import { z } from "zod";
 
-import {
-  createTRPCRouter,
-  protectedProcedure,
-  publicProcedure,
-} from "@/server/api/trpc";
+import { createTRPCRouter, protectedProcedure } from "@/server/api/trpc";
 import { UserRole } from "@prisma/client";
 import { DifferentMessageStatus } from "@/lib/types";
 import { pusherServer } from "@/lib/pusher";
 import { DifferentTypesOfWebSocketEvent } from "@/types/ws-messages-events.type";
 
 export const messageRouter = createTRPCRouter({
-  getRoomIds: protectedProcedure.query(async ({ ctx, input, signal }) => {
+  getRoomIds: protectedProcedure.query(async ({ ctx }) => {
     const rooms = await ctx.db.room.findMany({
       where: { participantIds: { has: ctx.session.user.id } },
       select: { id: true },
@@ -20,7 +16,7 @@ export const messageRouter = createTRPCRouter({
     return roomIds;
   }),
 
-  getRooms: protectedProcedure.query(async ({ ctx, input, signal }) => {
+  getRooms: protectedProcedure.query(async ({ ctx }) => {
     const rawRooms = await ctx.db.room.findMany({
       where: { participantIds: { has: ctx.session.user.id } },
       select: {
@@ -89,7 +85,7 @@ export const messageRouter = createTRPCRouter({
         }),
       }),
     )
-    .mutation(async ({ ctx, input: { channel, event, payload }, signal }) => {
+    .mutation(async ({ ctx, input: { channel, event, payload } }) => {
       await ctx.db.user.update({
         where: { id: ctx.session.user.id },
         data: { lastSeen: new Date(), isOnline: true },
@@ -101,7 +97,7 @@ export const messageRouter = createTRPCRouter({
           content: payload.content,
         },
       });
-      const response = await pusherServer.trigger(channel, event, {
+      await pusherServer.trigger(channel, event, {
         roomId: payload.roomId,
         userId: ctx.session.user.id,
         messageId: newMessage.id,
@@ -112,7 +108,7 @@ export const messageRouter = createTRPCRouter({
 
   createNewRoom: protectedProcedure
     .input(z.object({ applicantId: z.string() }))
-    .mutation(async ({ ctx, input: { applicantId }, signal }) => {
+    .mutation(async ({ ctx, input: { applicantId } }) => {
       await ctx.db.user.update({
         where: { id: ctx.session.user.id },
         data: { lastSeen: new Date(), isOnline: true },
@@ -154,7 +150,7 @@ export const messageRouter = createTRPCRouter({
         payload: z.object({ roomId: z.string(), messageId: z.string() }),
       }),
     )
-    .mutation(async ({ ctx, input: { channel, event, payload }, signal }) => {
+    .mutation(async ({ ctx, input: { channel, event, payload } }) => {
       await ctx.db.user.update({
         where: { id: ctx.session.user.id },
         data: { lastSeen: new Date(), isOnline: true },
@@ -179,12 +175,12 @@ export const messageRouter = createTRPCRouter({
         payload: z.object({ roomId: z.string(), userId: z.string() }),
       }),
     )
-    .mutation(async ({ ctx, input: { channel, event, payload }, signal }) => {
+    .mutation(async ({ ctx, input: { channel, event, payload } }) => {
       await ctx.db.user.update({
         where: { id: ctx.session.user.id },
         data: { lastSeen: new Date(), isOnline: true },
       });
-      const updatedMessages = await ctx.db.message.updateMany({
+      await ctx.db.message.updateMany({
         where: {
           roomId: payload.roomId,
           senderId: { not: ctx.session.user.id },
@@ -206,7 +202,7 @@ export const messageRouter = createTRPCRouter({
         payload: z.object({ roomId: z.string() }),
       }),
     )
-    .mutation(async ({ ctx, input: { channel, event, payload }, signal }) => {
+    .mutation(async ({ ctx, input: { channel, event, payload } }) => {
       await ctx.db.user.update({
         where: { id: ctx.session.user.id },
         data: { lastSeen: new Date(), isOnline: true },
@@ -225,7 +221,7 @@ export const messageRouter = createTRPCRouter({
         payload: z.object({ roomId: z.string() }),
       }),
     )
-    .mutation(async ({ ctx, input: { channel, event, payload }, signal }) => {
+    .mutation(async ({ ctx, input: { channel, event, payload } }) => {
       await ctx.db.user.update({
         where: { id: ctx.session.user.id },
         data: { lastSeen: new Date(), isOnline: true },

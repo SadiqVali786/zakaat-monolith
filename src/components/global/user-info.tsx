@@ -28,8 +28,8 @@ export const UserInfoCard = async ({
           </AvatarFallback>
         </Avatar>
         <div className="hidden flex-col leading-tight lg:flex">
-          <p className="text-blue-50">{session?.user?.name}</p>
-          <p className="text-neutral-7">{session?.user?.email.split("@")[0]}</p>
+          <p className="text-blue-50">{session?.user.name}</p>
+          <p className="text-neutral-7">{session?.user.email?.split("@")[0]}</p>
         </div>
       </div>
       {rank ? (

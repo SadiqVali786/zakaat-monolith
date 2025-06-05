@@ -14,7 +14,7 @@ export function MessageBar() {
 
   const utils = api.useUtils();
   const sendMessageMutation = api.message.sendChatMessage.useMutation({
-    onSuccess: async (newMessage) => {
+    onSuccess: async () => {
       await utils.message.getRooms.invalidate();
     },
   });

@@ -16,8 +16,6 @@ export const env = createEnv({
     RAZORPAY_KEY_ID: z.string(),
     RAZORPAY_KEY_SECRET: z.string(),
     RAZORPAY_WEBHOOK_SECRET: z.string(),
-    REDIS_MSG_QUEUE_KEY: z.string(),
-    REDIS_URL: z.string().url(),
 
     EMAIL_HOST: z.string(),
     EMAIL_PORT: z.string(),
@@ -30,7 +28,6 @@ export const env = createEnv({
 
   client: {
     NEXT_PUBLIC_BASE_URL: z.string().url(),
-    NEXT_PUBLIC_FASTAPI_FACE_VERIFICATION_BE_URL: z.string().url(),
     NEXT_PUBLIC_PUSHER_APP_ID: z.string(),
     NEXT_PUBLIC_PUSHER_PUBLISHABLE_KEY: z.string(),
     NEXT_PUBLIC_PUSHER_CLUSTER: z.string(),
@@ -46,8 +43,6 @@ export const env = createEnv({
     RAZORPAY_KEY_ID: process.env.RAZORPAY_KEY_ID,
     RAZORPAY_KEY_SECRET: process.env.RAZORPAY_KEY_SECRET,
     RAZORPAY_WEBHOOK_SECRET: process.env.RAZORPAY_WEBHOOK_SECRET,
-    REDIS_MSG_QUEUE_KEY: process.env.REDIS_MSG_QUEUE_KEY,
-    REDIS_URL: process.env.REDIS_URL,
     NEXT_PUBLIC_NEXTAUTH_URL: process.env.NEXT_PUBLIC_NEXTAUTH_URL,
     EMAIL_HOST: process.env.EMAIL_HOST,
     EMAIL_PORT: process.env.EMAIL_PORT,
@@ -58,8 +53,6 @@ export const env = createEnv({
     PUSHER_SECRET_KEY: process.env.PUSHER_SECRET_KEY,
 
     NEXT_PUBLIC_BASE_URL: process.env.NEXT_PUBLIC_BASE_URL,
-    NEXT_PUBLIC_FASTAPI_FACE_VERIFICATION_BE_URL:
-      process.env.NEXT_PUBLIC_FASTAPI_FACE_VERIFICATION_BE_URL,
     NEXT_PUBLIC_PUSHER_APP_ID: process.env.NEXT_PUBLIC_PUSHER_APP_ID,
     NEXT_PUBLIC_PUSHER_PUBLISHABLE_KEY:
       process.env.NEXT_PUBLIC_PUSHER_PUBLISHABLE_KEY,

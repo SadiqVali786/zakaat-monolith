@@ -25,9 +25,10 @@ export default function TweetForm() {
     },
   });
 
+  const util = api.useUtils();
   const tweetMutation = api.tweet.create.useMutation({
     onSuccess: async () => {
-      await api.useUtils().tweet.infiniteTweetsScrollFeed.invalidate({
+      await util.tweet.infiniteTweetsScrollFeed.invalidate({
         onlyFollowing: false,
         limit: 20,
       });

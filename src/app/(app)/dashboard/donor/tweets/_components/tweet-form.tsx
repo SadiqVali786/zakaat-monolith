@@ -25,17 +25,18 @@ export default function TweetForm() {
     },
   });
 
+  const tweetMutation = api.tweet.create.useMutation({
+    onSuccess: async () => {
+      await api.useUtils().tweet.infiniteTweetsScrollFeed.invalidate({
+        onlyFollowing: false,
+        limit: 20,
+      });
+    },
+  });
+
   const onSubmit = async (data: z.infer<typeof tweetFormSchema>) => {
     try {
-      api.tweet.create
-        .useMutation({
-          onSuccess: async () => {
-            await api.useUtils().tweet.infiniteTweetsScrollFeed.invalidate({
-              onlyFollowing: false,
-            });
-          },
-        })
-        .mutate({ text: data.tweet });
+      tweetMutation.mutate({ text: data.tweet });
       form.reset();
     } catch (error) {
       console.error(error);
